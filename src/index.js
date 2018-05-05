@@ -11,20 +11,19 @@ const Button = (props) => {
 
 const Statistic = (props) => {
     return(
-        <div>
-            {props.selite} {props.arvo}
-        </div>
+        <tr key={props.selite}>
+            <td>{props.selite}</td><td>{props.arvo}</td>
+        </tr>
     )
 }
 
 const Statistics = (props) => {
-    const summa = (a,b) => a+b // jos arvojen summa on 0, yhtään mitään ei ole vielä annettu. Apufunktio
-    const arvo = props.data.map(d => d.value).reduce(summa,0)
-    if(arvo === 0) {
+    const arvo = props.data.map(d => d.value).filter(v => v!==0).length !== 0
+    if(!arvo) {
         return(<div>Yhtään palautetta ei ole vielä annettu</div>)
     } else {
-        const statistics = props.data.map(d => <Statistic selite={d.teksti} arvo={d.value}/>)
-        return statistics   
+        const statistics = props.data.map(d => <Statistic selite={d.teksti} arvo={d.value} key={d.key}/>)
+    return (<table><tbody>{statistics}</tbody></table>)   
     }
 }
 
@@ -39,27 +38,15 @@ class App extends React.Component {
     }
 
 
+    /* tehtävä 1.10:n tapahtumakäsittelijä */
 
-    thisIsGood = () => {
-        return ()=>{
-            this.setState({good: this.state.good +1
-            })
+    handleIncrement = (value) => {
+        return () => {
+            this.setState({[value]: this.state[value]+1})
         }
     }
 
-    thisIsNeutral = () => {
-        return ()=>{
-            this.setState({neutral: this.state.neutral +1
-              })
-        }
-    }
-
-    thisIsBad = () => {
-        return ()=>{
-            this.setState({bad: this.state.bad +1
-            })
-        }
-    }
+    
     
     keskiarvo = () => {
         let divider = this.state.good+this.state.neutral+this.state.bad
@@ -92,24 +79,26 @@ class App extends React.Component {
         
         const palautteet = [
             {
-                //key: 'good',
+                key: 'good',
                 teksti: "Hyvä",
                 value: this.state.good
             },
-            {   //key: 'neutral',
+            {   key: 'neutral',
                 teksti: "Neutraali",
                 value: this.state.neutral
             },
             {
-                //key: 'bad',
+                key: 'bad',
                 teksti: "Huono",
                 value: this.state.bad
             },
             {
+                key: 'ka',
                 teksti: "Keskiarvo",
                 value: this.keskiarvo()
             },
             {
+                key:'positive',
                 teksti: "Positiivisia",
                 value: this.positiivisia()
             }
@@ -119,9 +108,9 @@ class App extends React.Component {
         return(
             <div>
                 <h1>Anna palautetta</h1>
-                <Button handleClick={this.thisIsGood()} teksti="Hyvä"/>
-                <Button handleClick={this.thisIsNeutral()} teksti="Neutraali"/>
-                <Button handleClick={this.thisIsBad()} teksti="Huono"/>
+                <Button handleClick={this.handleIncrement('good')} teksti="Hyvä"/>
+                <Button handleClick={this.handleIncrement('neutral')} teksti="Neutraali"/>
+                <Button handleClick={this.handleIncrement('bad')} teksti="Huono"/>
 
                 <h1>Statistiikkaa</h1>
                 <Statistics data={palautteet}/>
