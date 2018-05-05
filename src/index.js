@@ -1,6 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+const Button = (props) => {
+    console.log(props)
+    const {handleClick,teksti } = props
+    return(
+        <button onClick={handleClick}>{teksti}</button>
+    )
+}
+
+
+const Statistic = (props) => {
+    return(
+        <div>
+            {props.selite} {props.arvo}
+        </div>
+    )
+}
+
+const Statistics = (props) => {
+    console.log(props)
+    const statistics = props.data.map(d => <Statistic selite={d.teksti} arvo={d.value}/>)
+    console.log(statistics)
+    return statistics   
+}
+
 class App extends React.Component {
     constructor() {
         super()
@@ -11,13 +35,7 @@ class App extends React.Component {
         }
     }
 
-    addToList = (value) => {
 
-    }
-
-    sum = (a,b) => {
-        return a+b
-    }
 
     thisIsGood = () => {
         return ()=>{
@@ -39,23 +57,71 @@ class App extends React.Component {
             })
         }
     }
+    
+    keskiarvo = () => {
+        let divider = this.state.good+this.state.neutral+this.state.bad
+        let ka = 0
+        if (divider === 0) {
+            ka = 0
+        } else {
+            ka = (this.state.good*1+this.state.neutral*0+this.state.bad*-1)/(this.state.good+this.state.neutral+this.state.bad)
 
+        }
+        return (
+            ka
+        )
+    }
 
+    positiivisia = () => {
+        let divider = this.state.good+this.state.neutral+this.state.bad
+        let positiiviset = 0
+        if (divider === 0) {
+            positiiviset = 0
+        }
+        else {
+            positiiviset = (this.state.good/(this.state.good+this.state.neutral+this.state.bad))*100
+        }
+        return positiiviset
+    }
+    
 
     render() {
+        
+        const palautteet = [
+            {
+                //key: 'good',
+                teksti: "Hyvä",
+                value: this.state.good
+            },
+            {   //key: 'neutral',
+                teksti: "Neutraali",
+                value: this.state.neutral
+            },
+            {
+                //key: 'bad',
+                teksti: "Huono",
+                value: this.state.bad
+            },
+            {
+                teksti: "Keskiarvo",
+                value: this.keskiarvo()
+            },
+            {
+                teksti: "Positiivisia",
+                value: this.positiivisia()
+            }
+
+        ]
+
         return(
             <div>
                 <h1>Anna palautetta</h1>
-                <button onClick={this.thisIsGood()} >Hyvä</button>
-                <button onClick={this.thisIsNeutral()}>Neutraali</button>
-                <button onClick={this.thisIsBad()}>Huono</button>
+                <Button handleClick={this.thisIsGood()} teksti="Hyvä"/>
+                <Button handleClick={this.thisIsNeutral()} teksti="Neutraali"/>
+                <Button handleClick={this.thisIsBad()} teksti="Huono"/>
 
                 <h1>Statistiikkaa</h1>
-                Hyvä: {this.state.good} <br/>
-                Neutraali: {this.state.neutral} <br/>
-                Huono: {this.state.bad} <br/>
-                Keskiarvo: {(this.state.good*1+this.state.neutral*0+this.state.bad*-1)/(this.state.good+this.state.neutral+this.state.bad)} <br/>
-                Positiivisia: {(this.state.good/(this.state.good+this.state.neutral+this.state.bad))*100} %
+                <Statistics data={palautteet}/>
             </div>
         )
     }
