@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 const Button = (props) => {
-    console.log(props)
     const {handleClick,teksti } = props
     return(
         <button onClick={handleClick}>{teksti}</button>
@@ -19,10 +18,14 @@ const Statistic = (props) => {
 }
 
 const Statistics = (props) => {
-    console.log(props)
-    const statistics = props.data.map(d => <Statistic selite={d.teksti} arvo={d.value}/>)
-    console.log(statistics)
-    return statistics   
+    const summa = (a,b) => a+b // jos arvojen summa on 0, yhtään mitään ei ole vielä annettu. Apufunktio
+    const arvo = props.data.map(d => d.value).reduce(summa,0)
+    if(arvo === 0) {
+        return(<div>Yhtään palautetta ei ole vielä annettu</div>)
+    } else {
+        const statistics = props.data.map(d => <Statistic selite={d.teksti} arvo={d.value}/>)
+        return statistics   
+    }
 }
 
 class App extends React.Component {
@@ -31,7 +34,7 @@ class App extends React.Component {
         this.state = {
             good: 0,
             neutral: 0,
-            bad: 0,            
+            bad: 0, 
         }
     }
 
